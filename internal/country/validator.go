@@ -1,15 +1,15 @@
-package workspace
+package country
 
 import (
 	"fmt"
 	"payroll/internal/platform/validation"
-
-	"github.com/google/uuid"
 )
 
 const (
-	maxCodeLength = 20
-	maxNameLength = 100
+	maxCodeLength       = 3
+	maxNameLength       = 100
+	maxCoinCodeLength   = 3
+	maxCoinSymbolLength = 5
 )
 
 type Validator struct {
@@ -36,14 +36,17 @@ func (v *Validator) ValidateName(name string) {
 	}
 }
 
-func (v *Validator) ValidateStatus(status *WorkspaceStatus) {
-	if status != nil && !status.IsValid() {
-		v.AddError("Status", "is invalid")
+func (v *Validator) ValidateCoinCode(coinCode string) {
+	if coinCode == "" {
+		v.AddError("CoinCode", "is empty")
+	} else if len(coinCode) > maxCoinCodeLength {
+		v.AddError("CoinCode", fmt.Sprintf("must be less than %d characters", maxCoinCodeLength))
 	}
 }
-
-func (v *Validator) ValidateCountryID(countryID uuid.UUID) {
-	if countryID == uuid.Nil {
-		v.AddError("CountryID", "is empty")
+func (v *Validator) ValidateCoinSymbol(coinSymbol string) {
+	if coinSymbol == "" {
+		v.AddError("CoinSymbol", "is empty")
+	} else if len(coinSymbol) > maxCoinSymbolLength {
+		v.AddError("CoinSymbol", fmt.Sprintf("must be less than %d characters", maxCoinSymbolLength))
 	}
 }

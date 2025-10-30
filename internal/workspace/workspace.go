@@ -53,7 +53,7 @@ func NewWorkspace(params CreateWorkspaceParams) (*Workspace, error) {
 	validator := NewValidator()
 
 	if params.TenantID == uuid.Nil {
-		validator.errs["TenantID"] = "is empty"
+		validator.AddError("TenantID", "is empty")
 	}
 
 	validator.ValidateCode(params.Code)

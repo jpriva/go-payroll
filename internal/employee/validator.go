@@ -3,6 +3,7 @@ package employee
 import (
 	"fmt"
 	"net/mail"
+	"payroll/internal/platform/validation"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,67 +19,59 @@ const (
 )
 
 type Validator struct {
-	errs map[string]string
+	validation.Validator
 }
 
 func NewValidator() *Validator {
-	return &Validator{errs: make(map[string]string)}
-}
-
-func (v *Validator) Errors() map[string]string {
-	return v.errs
-}
-
-func (v *Validator) HasErrors() bool {
-	return len(v.errs) > 0
+	return &Validator{*validation.New()}
 }
 
 func (v *Validator) ValidateFirstName(firstName string) {
 	if firstName == "" {
-		v.errs["FirstName"] = "is empty"
+		v.AddError("FirstName", "is empty")
 	} else if len(firstName) > maxFirstNameLength {
-		v.errs["FirstName"] = fmt.Sprintf("must be less than %d characters", maxFirstNameLength)
+		v.AddError("FirstName", fmt.Sprintf("must be less than %d characters", maxFirstNameLength))
 	}
 }
 
 func (v *Validator) ValidateLastName(lastName string) {
 	if lastName == "" {
-		v.errs["LastName"] = "is empty"
+		v.AddError("LastName", "is empty")
 	} else if len(lastName) > maxLastNameLength {
-		v.errs["LastName"] = fmt.Sprintf("must be less than %d characters", maxLastNameLength)
+		v.AddError("LastName", fmt.Sprintf("must be less than %d characters", maxLastNameLength))
 	}
 }
 
 func (v *Validator) ValidateEmail(email string) {
 	if email == "" {
-		v.errs["Email"] = "is empty"
+		v.AddError("Email", "is empty")
 		return
 	}
 	if len(email) > maxEmailLength {
-		v.errs["Email"] = fmt.Sprintf("must be less than %d characters", maxEmailLength)
+		v.AddError("Email", fmt.Sprintf("must be less than %d characters", maxEmailLength))
 	}
 	if _, err := mail.ParseAddress(email); err != nil {
-		v.errs["Email"] = "is not a valid email format"
+		v.AddError("Email", "is not a valid email format")
 	}
 }
 
 func (v *Validator) ValidateDocTypeID(docTypeID uuid.UUID) {
 	if docTypeID == uuid.Nil {
-		v.errs["DocTypeID"] = "is empty"
+		v.AddError("DocTypeID", "is empty")
 	}
 }
 
 func (v *Validator) ValidateDocNumber(docNumber string) {
 	if docNumber == "" {
-		v.errs["DocNumber"] = "is empty"
+		v.AddError("DocNumber", "is empty")
 	} else if len(docNumber) > maxDocNumberLength {
-		v.errs["DocNumber"] = fmt.Sprintf("must be less than %d characters", maxDocNumberLength)
+		v.AddError("DocNumber", fmt.Sprintf("must be less than %d characters", maxDocNumberLength))
 	}
 }
 
 func (v *Validator) ValidateBirthDate(birthDate *time.Time) {
 	if birthDate != nil && birthDate.After(time.Now()) {
-		v.errs["BirthDate"] = "cannot be in the future"
+		v.AddError("BirthDate", "cannot be in the future")
 	}
 }
 
@@ -86,19 +79,19 @@ func (v *Validator) ValidateGender(gender *string) {
 	if gender != nil {
 		g := EmployeeGender(*gender)
 		if !g.IsValid() {
-			v.errs["Gender"] = "is invalid"
+			v.AddError("Gender", "is invalid")
 		}
 	}
 }
 
 func (v *Validator) ValidatePhone(phone *string) {
 	if phone != nil && len(*phone) > maxPhoneLength {
-		v.errs["Phone"] = fmt.Sprintf("must be less than %d characters", maxPhoneLength)
+		v.AddError("Phone", fmt.Sprintf("must be less than %d characters", maxPhoneLength))
 	}
 }
 
 func (v *Validator) ValidateAddress(address *string) {
 	if address != nil && len(*address) > maxAddressLength {
-		v.errs["Address"] = fmt.Sprintf("must be less than %d characters", maxAddressLength)
+		v.AddError("Address", fmt.Sprintf("must be less than %d characters", maxAddressLength))
 	}
 }

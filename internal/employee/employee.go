@@ -76,10 +76,10 @@ func NewEmployee(params CreateEmployeeParams) (*Employee, error) {
 	validator := NewValidator()
 
 	if params.TenantID == uuid.Nil {
-		validator.errs["TenantID"] = "is empty"
+		validator.AddError("TenantID", "is empty")
 	}
 	if params.WorkspaceID == uuid.Nil {
-		validator.errs["WorkspaceID"] = "is empty"
+		validator.AddError("WorkspaceID", "is empty")
 	}
 
 	params.FirstName = strings.TrimSpace(params.FirstName)
